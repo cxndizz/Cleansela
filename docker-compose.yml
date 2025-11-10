@@ -1,0 +1,57 @@
+# docker-compose.yml
+version: '3'
+
+services:
+  backend:
+    build:
+      context: ./backend
+    ports:
+      - "9001:9001"
+    volumes:
+      - ./tmp:/app/tmp
+    environment:
+      - FRONTEND_URL=http://localhost:9000
+      - BACKEND_URL=http://localhost:9001
+      - REDIS_URL=redis://redis:6379
+      - MAX_FILE_SIZE=50000000
+      - TEMP_DIR=/app/tmp
+      - CLEANUP_MINS=15
+    depends_on:
+      - redis
+
+  worker:
+    build:
+      context: ./backend
+    command: python -m app.worker
+    volumes:
+      - ./tmp:/app/tmp
+    environment:
+      - FRONTEND_URL=http://localhost:9000
+      - BACKEND_URL=http://localhost:9001
+      - REDIS_URL=redis://redis:6379
+      - MAX_FILE_SIZE=50000000
+      - TEMP_DIR=/app/tmp
+      - CLEANUP_MINS=15
+    depends_on:
+      - redis
+      - backend
+
+  frontend:
+    build:
+      context: ./frontend
+    ports:
+      - "9000:9000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:9001/api
+    depends_on:
+      - backend
+
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+volumes:
+  redis_data:
