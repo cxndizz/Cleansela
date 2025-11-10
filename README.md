@@ -63,7 +63,7 @@ Data Cleanser เป็นเว็บแอปพลิเคชันสำห
 1. **โคลนโปรเจกต์**
 
 ```bash
-git clone https://github.com/yourusername/data-cleanser.git
+git clone https://github.com/cxndizz/data-cleanser.git
 cd data-cleanser
 ```
 
